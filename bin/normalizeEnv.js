@@ -79,7 +79,7 @@ envVars.CONNECTOR_ED25519_SECRET_KEY = generateSecret(secret, 'CONNECTOR_ED25519
 
 // Add ledger env vars
 if (!getVar('API_LEDGER_URI')) {
-  const clientPublicPort = getVar('CLIENT_PUBLIC_PORT') || getVar('CLIENT_PORT', '80')
+  const clientPublicPort = getVar('CLIENT_PUBLIC_PORT') || getVar('PORT') || getVar('CLIENT_PORT', '80')
   const ledgerPublicPort = (clientPublicPort !== '80' && clientPublicPort !== '443') ? ':' + clientPublicPort : ''
 
   envVars.LEDGER_DB_URI = getVar('LEDGER_DB_URI') || getVar('DB_URI')
