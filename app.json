@@ -2,7 +2,7 @@
   "name": "ilp-kit",
   "description": "ILP kit",
   "repository": "https://github.com/interledgerjs/ilp-kit",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "logo": "https://avatars1.githubusercontent.com/u/22465593",
   "keywords": [
     "five-bells",
     "ilp",
@@ -11,5 +11,124 @@
     "ui",
     "payments",
     "finance"
+  ],
+
+  "success_url": "/",
+  "scripts": {
+  },
+
+  "env": {
+    "ILP_KIT_CLI_VERSION": {
+      "value": "11.1.0"
+    },
+    "DB_URI": {
+      "description": "Postgre DB URL",
+      "value": ""
+    },
+    "API_EMAIL_SENDER_NAME": {
+      "description": "Sender name",
+      "value": "Best-ilp"
+    },
+    "API_EMAIL_SENDER_ADDRESS": {
+      "description": "Postgre DB URL",
+      "value": "ilpkit@best-ilp.herokuapp.com"
+    },
+    "API_HOSTNAME": {
+      "description": "Hostname for this ledger",
+      "value": "best-ilp.herokuapp.com"
+    },
+    "CLIENT_HOST": {
+      "description": "Hostname for this ledger",
+      "value": "best-ilp.herokuapp.com"
+    },
+    "API_PORT": {
+      "value": "3100"
+    },
+    "API_PRIVATE_HOSTNAME": {
+      "value": "localhost"
+    },
+    "API_PUBLIC_HTTPS": {
+      "value": "true"
+    },
+    "API_PUBLIC_PATH": {
+      "value": "/api"
+    },
+    "API_PUBLIC_PORT": {
+      "value": "443"
+    },
+    "API_SECRET": {
+      "generator": "secret"
+    },
+    "BLUEBIRD_WARNINGS": {
+      "value": "0"
+    },
+    "CLIENT_PORT": {
+      "value": "3010"
+    },
+    "CLIENT_PUBLIC_PORT": {
+      "value": "443"
+    },
+    "CLIENT_TITLE": {
+      "value": "Best-ilp"
+    },
+    "LEDGER_ADMIN_USER": {
+      "value": "admin"
+    },
+    "LEDGER_ADMIN_PASS": {
+      "value": "19XNW54rtsHN7IRNGjAnejSAO"
+    },
+      "LEDGER_CURRENCY_CODE": {
+        "value": "USD"
+    },
+      "LEDGER_CURRENCY_SYMBOL": {
+        "value": "$"
+    },
+      "LEDGER_ILP_PREFIX": {
+        "value": "us.usd.best-ilp."
+    },
+      "LEDGER_PRECISION": {
+        "value": "10"
+    },
+      "CONNECTOR_ENABLE": {
+        "value": "true"
+    },
+      "CONNECTOR_LEDGERS": {
+        "value": "{\"us.usd.best-ilp.\":{\"currency\":\"USD\",\"plugin\":\"ilp-plugin-bells\",\"options\":{\"account\":\"https://best-ilp.herokuapp.com/ledger/accounts/connector\",\"username\":\"connector\",\"password\":\"oRaLaBNkDc3fMCSUmm01vRfP\"}}}"
+    },
+      "CONNECTOR_LOG_LEVEL": {
+        "value": "info"
+    },
+      "CONNECTOR_MAX_HOLD_TIME": {
+        "value": "100"
+    },
+      "CONNECTOR_AUTOLOAD_PEERS": {
+        "value": "true"
+    },
+      "CONNECTOR_PORT": {
+        "value": "4000"
+    },
+      "LEDGER_RECOMMENDED_CONNECTORS": {
+        "value": "connector"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql",
+      "as": "DB"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    },
+    {
+      "url": "heroku/nodejs"
+    },
   ]
 }
