@@ -73,7 +73,7 @@ if (!envVars.API_DB_URI) {
 }
 
 // Default client port to PORT
-envVars.API_PUBLIC_PORT = getVar('API_PUBLIC_PORT') || getVar('PORT') || '3010'
+envVars.APP_PORT = getVar('PORT') || getVar('APP_PORT') || '3100'
 
 // Secrets
 const secret = getVar('API_SECRET', 'secret') // 'secret' for tests
