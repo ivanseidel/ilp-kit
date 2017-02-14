@@ -19,7 +19,7 @@ const cx = classNames.bind(styles)
 @connect(
   state => ({
     peerState: state.peer,
-    loading: state.peer.loading
+    loaded: state.peer.loaded
   }),
   { load, update, remove })
 export default class Peers extends Component {
@@ -28,7 +28,7 @@ export default class Peers extends Component {
     load: PropTypes.func.isRequired,
     update: PropTypes.func.isRequired,
     remove: PropTypes.func.isRequired,
-    loading: PropTypes.bool
+    loaded: PropTypes.bool
   }
 
   state = {}
@@ -96,7 +96,7 @@ export default class Peers extends Component {
               </span>
             </div>
             <div className={cx('col', 'actionsBox')}>
-              {peer.minBalance !== 0 &&
+              {peer.online && peer.minBalance !== 0 &&
               <PeerSettlementButton peer={peer} />}
               {/* TODO:UX deleteion confirmation */}
               <button type="button" className={cx('btn', 'btn-danger', 'btn-delete')} onClick={this.handleRemove.bind(null, peer)}>
@@ -139,14 +139,6 @@ export default class Peers extends Component {
         </div>}
 
         <List
-          loadingScreen={(
-            <div className={cx('panel', 'panel-default', 'peersStatus')}>
-              <div className="panel-body">
-                <i className={cx('fa', 'fa-link')} />
-                <h1>Loading Peers...</h1>
-              </div>
-            </div>
-          )}
           emptyScreen={(
             <div className={cx('panel', 'panel-default', 'peersStatus')}>
               <div className="panel-body">

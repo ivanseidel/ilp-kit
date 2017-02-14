@@ -86,13 +86,21 @@ module.exports = class Conncetor {
     // Get the host publicKey
     const hostInfo = yield this.utils.hostLookup('https://' + peer.hostname)
 
-    const publicKey = hostInfo.publicKey
-    const token = getToken(this.config.getIn(['connector', 'ed25519_secret_key']), publicKey)
+    let publicKey
+    let token
+    let rpcUri
+    let ledgerName
+    if (hostInfo.publicKey) {
+      publicKey = hostInfo.publicKey
+      token = getToken(this.config.getIn(['connector', 'ed25519_secret_key']), publicKey)
+      rpcUri = hostInfo.peersRpcUri
+      ledgerName = 'peer.' + token.substring(0, 5) + '.' + peer.currency.toLowerCase() + '.'
+    }
 
     this.peers[peer.destination] = {
       publicKey,
-      rpcUri: hostInfo.peersRpcUri,
-      ledgerName: 'peer.' + token.substring(0, 5) + '.' + peer.currency.toLowerCase() + '.',
+      rpcUri,
+      ledgerName,
       online: peerInfo ? peerInfo.online : false
     }
 
@@ -130,10 +138,6 @@ module.exports = class Conncetor {
           }
         }
       })
-
-      if (!this.peers[peer.destination]) {
-        this.peers[peer.destination] = {}
-      }
     } catch (e) {
       if (e.message.indexOf('No rate available') > -1) {
         throw new InvalidBodyError('Unsupported currency')
@@ -148,13 +152,16 @@ module.exports = class Conncetor {
 
       this.peers[peer.destination].online = true
     } catch (e) {
-      // Not connected. The other side hasn't peered with this kit yet
+      // Not connected. The other side hasn't peered with this kit
+      this.log.info("Can't get the peer limit")
     }
 
     plugin.on('incoming_message', co.wrap(function *(message) {
       if (message.data.method !== 'settlement_methods_request') return
 
       const peerStatus = yield self.getPeer(peer)
+
+      if (!peerStatus) return
 
       // Settlement Methods
       // TODO:PERFORMANCE don't call this on every request
@@ -208,8 +215,10 @@ module.exports = class Conncetor {
     }
 
     const peerInfo = this.peers[peer.destination]
-    const online = peerInfo && peerInfo.online
 
+    if (!peerInfo || !peerInfo.ledgerName) return
+
+    const online = peerInfo.online
     const plugin = connector.getPlugin(peerInfo.ledgerName)
 
     const balance = online && (yield plugin.getBalance())
@@ -225,6 +234,8 @@ module.exports = class Conncetor {
   * getSettlementMethods (peer) {
     const peerInfo = this.peers[peer.destination]
     const plugin = connector.getPlugin(peerInfo.ledgerName)
+
+    if (!peerInfo.online) return Promise.reject()
 
     const promise = new Promise(resolve => {
       const handler = message => {

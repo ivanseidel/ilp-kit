@@ -14,18 +14,22 @@ const cx = classNames.bind(styles)
 @connect(
   state => ({
     inviteState: state.invite,
-    config: state.auth.config
+    config: state.auth.config,
+    loaded: state.invite.loaded
   }),
   { loadCodes, remove })
 export default class Invites extends Component {
   static propTypes = {
     inviteState: PropTypes.object,
     loadCodes: PropTypes.func,
-    config: PropTypes.object
+    config: PropTypes.object,
+    loaded: PropTypes.bool
   }
 
   componentWillMount() {
-    this.props.loadCodes()
+    if(!this.props.loaded) {
+      this.props.loadCodes()
+    }
   }
 
   componentDidMount() {
@@ -86,14 +90,6 @@ export default class Invites extends Component {
         <div className={cx('row')}>
           <div className={cx('col-sm-8')}>
             <List
-              loadingScreen={(
-                <div className={cx('panel', 'panel-default', 'invitesStatus')}>
-                  <div className="panel-body">
-                    <i className={cx('fa', 'fa-ticket')} />
-                    <h1>Loading Invite Codes...</h1>
-                  </div>
-                </div>
-              )}
               emptyScreen={(
                 <div className={cx('panel', 'panel-default', 'invitesStatus')}>
                   <div className="panel-body">

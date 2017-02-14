@@ -2,6 +2,7 @@
 
 module.exports = PeersControllerFactory
 
+const _ = require('lodash')
 const forEach = require('co-foreach')
 const Auth = require('../lib/auth')
 const Log = require('../lib/log')
@@ -48,12 +49,17 @@ function PeersControllerFactory (auth, config, log, Peer, connector) {
       yield forEach(peers, function * (peer) {
         const peerInfo = yield connector.getPeer(peer)
 
+        if (!peerInfo) {
+          peer.online = false
+          return
+        }
+
         peer.balance = peerInfo.balance
         peer.minBalance = peerInfo.minBalance
         peer.online = peerInfo.online
       })
 
-      this.body = peers
+      this.body = _.orderBy(peers, ['online', 'created_at'], ['desc', 'desc'])
     }
 
     static* getResource () {
@@ -105,16 +111,20 @@ function PeersControllerFactory (auth, config, log, Peer, connector) {
       this.body = peer
     }
 
-    static * getSettlementMethods() {
+    static * getSettlementMethods () {
       const id = this.params.id
       const peer = yield Peer.findOne({ where: { id } })
 
       if (!peer) throw new NotFoundError("Peer doesn't exist")
 
-      this.body = yield connector.getSettlementMethods(peer)
+      try {
+        this.body = yield connector.getSettlementMethods(peer)
+      } catch (e) {
+        throw new NotFoundError()
+      }
     }
 
-    static * deleteResource() {
+    static * deleteResource () {
       const id = this.params.id
       const peer = yield Peer.findOne({ where: { id } })
 
@@ -127,7 +137,7 @@ function PeersControllerFactory (auth, config, log, Peer, connector) {
       this.body = this.params
     }
 
-    static * rpc() {
+    static * rpc () {
       const prefix = this.query.prefix
       const method = this.query.method
       const params = this.body
