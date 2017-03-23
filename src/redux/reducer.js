@@ -6,11 +6,12 @@ import { loadingBarReducer } from 'react-redux-loading-bar'
 
 import auth from './reducers/auth'
 import send from './reducers/send'
-import history from './reducers/history'
+import activity from './reducers/activity'
 import stats from './reducers/stats'
 import invite from './reducers/invite'
 import peer from './reducers/peer'
 import settlementMethod from './reducers/settlement_method'
+import settlement from './reducers/settlement'
 import user from './reducers/user'
 
 export default combineReducers({
@@ -18,11 +19,12 @@ export default combineReducers({
   reduxAsyncConnect,
   auth,
   send,
-  history,
+  activity,
   stats,
   invite,
   peer,
   settlementMethod,
+  settlement,
   user,
   form: form.normalize({
     peerAdd: {

@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 module.exports = SettlementFactory
 
@@ -10,28 +10,31 @@ const Database = require('../lib/db')
 const Validator = require('five-bells-shared/lib/validator')
 const Sequelize = require('sequelize')
 const PeerFactory = require('./peer')
+const UserFactory = require('./user')
 const SettlementMethodFactory = require('./settlement_method')
+const ActivityLogFactory = require('./activity_log')
+const ActivityLogsItemFactory = require('./activity_logs_item')
 
 SettlementFactory.constitute = [Database, Validator, Container]
-function SettlementFactory(sequelize, validator, container) {
+function SettlementFactory (sequelize, validator, container) {
   class Settlement extends Model {
-    static convertFromExternal(data) {
+    static convertFromExternal (data) {
       return data
     }
 
-    static convertToExternal(data) {
+    static convertToExternal (data) {
       delete data.created_at
       delete data.updated_at
 
       return data
     }
 
-    static convertFromPersistent(data) {
+    static convertFromPersistent (data) {
       data = _.omit(data, _.isNull)
       return data
     }
 
-    static convertToPersistent(data) {
+    static convertToPersistent (data) {
       return data
     }
   }
@@ -52,9 +55,29 @@ function SettlementFactory(sequelize, validator, container) {
     Settlement.DbModel.belongsTo(Peer.DbModel)
   }, [ PeerFactory ])
 
+  container.schedulePostConstructor(User => {
+    Settlement.DbModel.belongsTo(User.DbModel)
+  }, [ UserFactory ])
+
   container.schedulePostConstructor(SettlementMethod => {
     Settlement.DbModel.belongsTo(SettlementMethod.DbModel)
   }, [ SettlementMethodFactory ])
+
+  container.schedulePostConstructor(ActivityLog => {
+    container.schedulePostConstructor(ActivityLogsItem => {
+      Settlement.DbModel.belongsToMany(ActivityLog.DbModel, {
+        through: {
+          model: ActivityLogsItem.DbModel,
+          unique: false,
+          scope: {
+            item_type: 'settlement'
+          }
+        },
+        foreignKey: 'item_id',
+        constraints: false
+      })
+    }, [ ActivityLogsItemFactory ])
+  }, [ ActivityLogFactory ])
 
   return Settlement
 }
